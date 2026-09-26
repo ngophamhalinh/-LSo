@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ĐLso - Nền tảng Quản trị Thông minh AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        /* Custom scrollbar for tables */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 h-full flex flex-col antialiased">
+
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <!-- Logo & Brand -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-indigo-200">
+                        Đ
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">ĐLso</span>
+                        <span class="text-xs px-2 py-0.5 ml-1.5 bg-indigo-50 text-indigo-600 font-semibold rounded-full border border-indigo-100">AI Intelligence</span>
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-4">
+                    <div class="relative hidden md:block">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </span>
+                        <input type="text" placeholder="Tìm kiếm mã KH, SKU, đơn hàng..." class="pl-9 pr-4 py-1.5 text-sm bg-slate-100 rounded-lg border-none focus:ring-2 focus:ring-indigo-500 w-64 text-slate-700 placeholder-slate-400 outline-none transition">
+                    </div>
+                    
+                    <button class="relative p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition">
+                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full"></span>
+                        <i class="fa-regular fa-bell text-lg"></i>
+                    </button>
+
+                    <div class="h-6 w-px bg-slate-200"></div>
+
+                    <div class="flex items-center space-x-3">
+                        <img class="w-9 h-9 rounded-full object-cover border border-slate-200 shadow-sm" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar">
+                        <div class="hidden sm:block text-left">
+                            <p class="text-xs font-semibold text-slate-700">Nguyễn Minh Anh</p>
+                            <p class="text-[10px] text-slate-500">Quản trị viên vận hành</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 flex overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white border-r border-slate-200 hidden md:flex flex-col justify-between p-4 shrink-0">
+            <div class="space-y-6">
+                <div>
+                    <p class="px-3 text-[11px] font-semibold tracking-wider text-slate-400 uppercase mb-2">Tổng quan</p>
+                    <nav class="space-y-1">
+                        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition bg-indigo-50 text-indigo-600">
+                            <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                            <span>Bảng điều khiển</span>
+                        </button>
+                    </nav>
+                </div>
+
+                <div>
+                    <p class="px-3 text-[11px] font-semibold tracking-wider text-slate-400 uppercase mb-2">Tính năng cốt lõi AI</p>
+                    <nav class="space-y-1">
+                        <button onclick="switchTab('credit')" id="nav-credit" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                            <i class="fa-solid fa-wallet w-5 text-center"></i>
+                            <span>Công nợ & Đơn hàng</span>
+                        </button>
+                        <button onclick="switchTab('inventory')" id="nav-inventory" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                            <i class="fa-solid fa-boxes-stacked w-5 text-center"></i>
+                            <span>Đứt hàng & Chôn vốn</span>
+                        </button>
+                        <button onclick="switchTab('pricing')" id="nav-pricing" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium transition text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+                            <i class="fa-solid fa-tags w-5 text-center"></i>
+                            <span>Khuyến mãi & Chiết khấu</span>
+                        </button>
+                    </nav>
+                </div>
+
+                <div>
+                    <p class="px-3 text-[11px] font-semibold tracking-wider text-slate-400 uppercase mb-2">Hệ thống</p>
+                    <nav class="space-y-1">
+                        <button onclick="showToast('Tính năng Báo cáo thống kê đang phát triển!')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                            <i class="fa-solid fa-chart-line w-5 text-center"></i>
+                            <span>Báo cáo chi tiết</span>
+                        </button>
+                        <button onclick="showToast('Tính năng Cấu hình AI đang phát triển!')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition">
+                            <i class="fa-solid fa-sliders w-5 text-center"></i>
+                            <span>Tham số AI & Cấu hình</span>
+                        </button>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- AI Status Box -->
+            <div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white p-3.5 rounded-xl shadow-inner">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-medium text-indigo-200 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        AI Engine Active
+                    </span>
+                    <span class="text-[10px] bg-indigo-500/30 text-indigo-300 px-1.5 py-0.5 rounded">v3.4</span>
+                </div>
+                <p class="text-[11px] text-slate-300 leading-relaxed mb-2">Mô hình vừa đồng bộ 14,200 giao dịch lúc 11:45.</p>
+                <button onclick="showToast('Đã làm mới mô hình dự báo AI thành công!')" class="w-full bg-white/10 hover:bg-white/20 text-white text-xs font-medium py-1.5 rounded-lg transition border border-white/10">
+                    Đồng bộ ngay
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+
+            <div id="tab-dashboard" class="tab-content active space-y-6">
+                <!-- Welcome Banner & Quick Actions -->
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl p-6 text-white shadow-lg shadow-indigo-100 gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold">Xin chào, Nguyễn Minh Anh 👋</h1>
+                        <p class="text-indigo-100 text-sm mt-1">ĐLso AI đã phân tích toàn bộ dữ liệu kho hàng & công nợ hôm nay. Có <span class="font-bold underline">5 điểm bất thường</span> cần xử lý.</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="switchTab('credit')" class="bg-white text-indigo-600 hover:bg-indigo-50 px-4 py-2 rounded-xl text-sm font-semibold shadow-sm transition">
+                            <i class="fa-solid fa-bolt mr-2"></i>Xem gợi ý công nợ
+                        </button>
+                        <button onclick="showToast('Đang xuất toàn bộ báo cáo AI Excel...')" class="bg-indigo-700/60 hover:bg-indigo-700 text-white border border-indigo-400/30 px-4 py-2 rounded-xl text-sm font-medium transition">
+                            <i class="fa-solid fa-download mr-2"></i>Xuất báo cáo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Metrics Overview Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Metric 1 -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Hạn mức tối ưu đề xuất</span>
+                            <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                                <i class="fa-solid fa-wallet text-base"></i>
+                            </div>
+                        </div>
+                        <div class="my-3">
+                            <h3 class="text-2xl font-bold text-slate-800">18.4 Tỷ</h3>
+                            <p class="text-xs text-emerald-600 font-medium mt-1 flex items-center">
+                                <i class="fa-solid fa-arrow-trend-up mr-1"></i> +12.5% so với tháng trước
+                            </p>
+                        </div>
+                        <div class="text-[11px] text-slate-400 border-t border-slate-100 pt-2 flex justify-between">
+                            <span>Đã duyệt tự động: <strong>74%</strong></span>
+                            <span class="text-indigo-600 font-medium cursor-pointer" onclick="switchTab('credit')">Chi tiết →</span>
+                        </div>
+                    </div>
+
+                    <!-- Metric 2 -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Nguy cơ đứt hàng</span>
+                            <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                                <i class="fa-solid fa-triangle-exclamation text-base"></i>
+                            </div>
+                        </div>
+                        <div class="my-3">
+                            <h3 class="text-2xl font-bold text-slate-800">12 SKU</h3>
+                            <p class="text-xs text-rose-600 font-medium mt-1 flex items-center">
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i> Cần nhập hàng trong 3 ngày tới
+                            </p>
+                        </div>
+                        <div class="text-[11px] text-slate-400 border-t border-slate-100 pt-2 flex justify-between">
+                            <span>Đã chôn vốn: <strong>1.4 Tỷ</strong></span>
+                            <span class="text-indigo-600 font-medium cursor-pointer" onclick="switchTab('inventory')">Xử lý →</span>
+                        </div>
+                    </div>
+
+                    <!-- Metric 3 -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Mức chiết khấu tối ưu</span>
+                            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                                <i class="fa-solid fa-percent text-base"></i>
+                            </div>
+                        </div>
+                        <div class="my-3">
+                            <h3 class="text-2xl font-bold text-slate-800">8.2%</h3>
+                            <p class="text-xs text-emerald-600 font-medium mt-1 flex items-center">
+                                <i class="fa-solid fa-arrow-trend-down mr-1"></i> Tối ưu biên lợi nhuận +3.1%
+                            </p>
+                        </div>
+                        <div class="text-[11px] text-slate-400 border-t border-slate-100 pt-2 flex justify-between">
+                            <span>Áp dụng cho: <strong>45 Đại lý</strong></span>
+                            <span class="text-indigo-600 font-medium cursor-pointer" onclick="switchTab('pricing')">Xem ngay →</span>
+                        </div>
+                    </div>
+
+                    <!-- Metric 4 -->
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Hiệu suất vận hành AI</span>
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                <i class="fa-solid fa-robot text-base"></i>
+                            </div>
+                        </div>
+                        <div class="my-3">
+                            <h3 class="text-2xl font-bold text-slate-800">98.4%</h3>
+                            <p class="text-xs text-emerald-600 font-medium mt-1 flex items-center">
+                                <i class="fa-solid fa-circle-check mr-1"></i> Độ chính xác dự báo cao
+                            </p>
+                        </div>
+                        <div class="text-[11px] text-slate-400 border-t border-slate-100 pt-2 flex justify-between">
+                            <span>Tiết kiệm thời gian: <strong>42h/tuần</strong></span>
+                            <span class="text-indigo-600 font-medium cursor-pointer">Báo cáo →</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Main Chart -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm lg:col-span-2">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-base font-bold text-slate-800">Dự báo dòng tiền & Hạn mức công nợ</h3>
+                                <p class="text-xs text-slate-500">So sánh hạn mức hiện tại và hạn mức đề xuất bởi AI theo tháng</p>
+                            </div>
+                            <select class="text-xs bg-slate-100 border-none rounded-lg px-3 py-1.5 text-slate-600 font-medium outline-none">
+                                <option>6 tháng gần nhất</option>
+                                <option>12 tháng gần nhất</option>
+                            </select>
+                        </div>
+                        <div class="h-72 relative">
+                            <canvas id="mainDashboardChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- AI Insights Feed -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-base font-bold text-slate-800">Gợi ý AI thông minh</h3>
+                                <span class="text-xs bg-indigo-50 text-indigo-600 font-semibold px-2 py-0.5 rounded-full">3 mới</span>
+                            </div>
+                            
+                            <div class="space-y-3">
+                                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 hover:border-indigo-100 transition cursor-pointer" onclick="switchTab('credit')">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5">
+                                            <i class="fa-solid fa-triangle-exclamation text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-xs font-semibold text-slate-800">Đại lý Miền Trung (Cty TNHH Phát Đạt)</h4>
+                                            <p class="text-[11px] text-slate-500 mt-0.5 leading-relaxed">Đề xuất giảm hạn mức từ 2.5 tỷ xuống 1.8 tỷ do tần suất thanh toán chậm 14 ngày.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 hover:border-indigo-100 transition cursor-pointer" onclick="switchTab('inventory')">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center shrink-0 mt-0.5">
+                                            <i class="fa-solid fa-boxes-stacked text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-xs font-semibold text-slate-800">Nguy cơ chôn vốn mã SKU-8821</h4>
+                                            <p class="text-[11px] text-slate-500 mt-0.5 leading-relaxed">Lượng tồn kho hiện tại đủ dùng trong 95 ngày. Nên giảm giá 10% để xả kho.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 hover:border-indigo-100 transition cursor-pointer" onclick="switchTab('pricing')">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                                            <i class="fa-solid fa-tags text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-xs font-semibold text-slate-800">Tối ưu chiết khấu dòng hàng điện tử</h4>
+                                            <p class="text-[11px] text-slate-500 mt-0.5 leading-relaxed">Tăng chiết khấu thêm 1.5% sẽ kích thích tổng sản lượng đặt hàng tăng khoảng 22%.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="showToast('Đang tải thêm gợi ý AI...')" class="w-full mt-4 text-center text-xs text-indigo-600 font-semibold hover:text-indigo-700 py-2 border border-dashed border-indigo-200 rounded-xl hover:bg-indigo-50/50 transition">
+                            Xem tất cả 14 gợi ý khác →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-credit" class="tab-content space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">1. Gợi ý hạn mức công nợ và đơn hàng tối ưu</h2>
+                        <p class="text-sm text-slate-500 mt-0.5">AI tự động phân tích lịch sử thanh toán, dòng tiền và năng lực hấp thụ để gán hạn mức cho từng đại lý.</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="showModal('modal-add-credit')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-sm transition flex items-center">
+                            <i class="fa-solid fa-plus mr-2"></i>Thêm hạn mức mới
+                        </button>
+                        <button onclick="showToast('Đã tính toán lại toàn bộ hạn mức bằng AI!')" class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-xl text-sm font-medium shadow-sm transition">
+                            <i class="fa-solid fa-rotate mr-2 text-indigo-600"></i>Chạy lại AI
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filter toolbar -->
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center space-x-3 flex-wrap gap-y-2">
+                        <select class="text-xs bg-slate-100 border-none rounded-lg px-3 py-2 text-slate-700 font-medium outline-none">
+                            <option>Tất cả khu vực</option>
+                            <option>Miền Bắc</option>
+                            <option>Miền Trung</option>
+                            <option>Miền Nam</option>
+                        </select>
+                        <select class="text-xs bg-slate-100 border-none rounded-lg px-3 py-2 text-slate-700 font-medium outline-none">
+                            <option>Trạng thái: Tất cả</option>
+                            <option>Cần tăng hạn mức</option>
+                            <option>Cần giảm hạn mức</option>
+                            <option>Ổn định</option>
+                        </select>
+                    </div>
+                    <div class="text-xs text-slate-500">
+                        Hiển thị <strong>5 / 142</strong> đại lý cần xem xét
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-400 font-semibold text-[11px] uppercase tracking-wider border-b border-slate-200">
+                                    <th class="py-3.5 px-4">Mã KH / Tên Đại Lý</th>
+                                    <th class="py-3.5 px-4">Hạn mức hiện tại</th>
+                                    <th class="py-3.5 px-4">Hạn mức AI đề xuất</th>
+                                    <th class="py-3.5 px-4">Đơn hàng tối ưu</th>
+                                    <th class="py-3.5 px-4">Đánh giá rủi ro</th>
+                                    <th class="py-3.5 px-4 text-right">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-sm">
+                                <tr class="hover:bg-slate-50/80 transition">
+                                    <td class="py-3.5 px-4">
+                                        <div class="font-semibold text-slate-800">Cty TNHH TMDV An Phát</div>
+                                        <div class="text-xs text-slate-400">KH-88210 • Miền Nam</div>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-slate-600 font-medium">1,200,000,000 đ</td>
+                                    <td class="py-3.5 px-4 text-indigo-600 font-bold">1,800,000,000 đ <span class="text-xs font-normal bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded ml-1">+50%</span></td>
+                                    <td class="py-3.5 px-4 text-slate-600">450,000,000 đ/đơn</td>
+                                    <td class="py-3.5 px-4">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">
+                                            Thấp (Rất tốt)
+                                        </span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right space-x-2">
+                                        <button onclick="showToast('Đã áp dụng hạn mức mới cho KH-88210')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-semibold transition">Áp dụng</button>
+                                        <button onclick="showToast('Đã gửi thông báo giải trình cho KH')" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-medium transition">Chi tiết</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/80 transition">
+                                    <td class="py-3.5 px-4">
+                                        <div class="font-semibold text-slate-800">Nhà phân phối Hoàng Long</div>
+                                        <div class="text-xs text-slate-400">KH-10492 • Miền Bắc</div>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-slate-600 font-medium">3,500,000,000 đ</td>
+                                    <td class="py-3.5 px-4 text-rose-600 font-bold">2,600,000,000 đ <span class="text-xs font-normal bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded ml-1">-25%</span></td>
+                                    <td class="py-3.5 px-4 text-slate-600">300,000,000 đ/đơn</td>
+                                    <td class="py-3.5 px-4">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700">
+                                            Cao (Chậm trả)
+                                        </span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right space-x-2">
+                                        <button onclick="showToast('Đã điều chỉnh giảm hạn mức thành công')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-semibold transition">Áp dụng</button>
+                                        <button onclick="showToast('Đã gửi thông báo giải trình cho KH')" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-medium transition">Chi tiết</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/80 transition">
+                                    <td class="py-3.5 px-4">
+                                        <div class="font-semibold text-slate-800">Cty CP Thương Mại Tiến Thành</div>
+                                        <div class="text-xs text-slate-400">KH-99120 • Miền Trung</div>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-slate-600 font-medium">800,000,000 đ</td>
+                                    <td class="py-3.5 px-4 text-indigo-600 font-bold">1,100,000,000 đ <span class="text-xs font-normal bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded ml-1">+37%</span></td>
+                                    <td class="py-3.5 px-4 text-slate-600">200,000,000 đ/đơn</td>
+                                    <td class="py-3.5 px-4">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">
+                                            Thấp (Ổn định)
+                                        </span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-right space-x-2">
+                                        <button onclick="showToast('Đã áp dụng hạn mức mới')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-semibold transition">Áp dụng</button>
+                                        <button onclick="showToast('Chi tiết KH')" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-medium transition">Chi tiết</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-inventory" class="tab-content space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">2. Giảm thiểu tỷ lệ đứt hàng và chôn vốn</h2>
+                        <p class="text-sm text-slate-500 mt-0.5">AI tối ưu hóa vòng quay hàng tồn kho, cảnh báo điểm đặt hàng lại (Reorder Point) theo thời gian thực.</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="showToast('Đã tạo lệnh mua hàng tự động cho các SKU rủi ro!')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-sm transition flex items-center">
+                            <i class="fa-solid fa-cart-plus mr-2"></i>Lập đơn hàng bù kho
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats summary -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-lg">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 font-medium">SKU có nguy cơ đứt hàng</p>
+                            <h4 class="text-xl font-bold text-slate-800">12 Mã sản phẩm</h4>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg">
+                            <i class="fa-solid fa-box-archive"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 font-medium">Vốn đang bị chôn (Tồn lâu)</p>
+                            <h4 class="text-xl font-bold text-slate-800">3.8 Tỷ đồng</h4>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg">
+                            <i class="fa-solid fa-rotate"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 font-medium">Vòng quay tồn kho tối ưu</p>
+                            <h4 class="text-xl font-bold text-slate-800">8.4 lần / năm</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-400 font-semibold text-[11px] uppercase tracking-wider border-b border-slate-200">
+                                    <th class="py-3.5 px-4">Mã SKU & Tên Hàng Hóa</th>
+                                    <th class="py-3.5 px-4">Tồn kho hiện tại</th>
+                                    <th class="py-3.5 px-4">Tốc độ tiêu thụ (Ngày)</th>
+                                    <th class="py-3.5 px-4">Cảnh báo AI</th>
+                                    <th class="py-3.5 px-4">Đề xuất xử lý</th>
+                                    <th class="py-3.5 px-4 text-right">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-sm">
+                                <tr class="hover:bg-slate-50/80 transition">
+                                    <td class="py-3.5 px-4">
+                                        <div class="font-semibold text-slate-800">SKU-CHIP-M2X (Chip xử lý M2X)</div>
+                                        <div class="text-xs text-slate-400">Kho tổng Miền Nam • Danh mục: Linh kiện</div>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-slate-600 font-medium">45 cái</td>
+                                    <td class="py-3.5 px-4 text-slate-600">15 cái/ngày</td>
+                                    <td class="py-3.5 px-4">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700">
+                                            Đứt hàng trong 3 ngày
+                                        </span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-xs text-slate-600 font-medium">Nhập thêm 200 cái ngay</td>
+                                    <td class="py-3.5 px-4 text-right">
+                                        <button onclick="showToast('Đã duyệt đơn nhập kho bù SKU-CHIP-M2X')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-semibold transition">Tạo đơn mua</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50/80 transition">
+                                    <td class="py-3.5 px-4">
+                                        <div class="font-semibold text-slate-800">SKU-LCD-27PRO (Màn hình 27 inch Pro)</div>
+                                        <div class="text-xs text-slate-400">Kho Miền Bắc • Danh mục: Thiết bị hiển thị</div>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-slate-600 font-medium">1,400 cái</td>
+                                    <td class="py-3.5 px-4 text-slate-600">4 cái/ngày</td>
+                                    <td class="py-3.5 px-4">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700">
+                                            Chôn vốn (Tồn 350 ngày)
+                                        </span>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-xs text-slate-600 font-medium">Giảm giá xả kho 12%</td>
+                                    <td class="py-3.5 px-4 text-right">
+                                        <button onclick="showToast('Đã chuyển sang tab Khuyến mãi để thiết lập xả kho')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-semibold transition">Xả kho</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-pricing" class="tab-content space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">3. Đề xuất mức khuyến mãi / chiết khấu tham khảo</h2>
+                        <p class="text-sm text-slate-500 mt-0.5">AI tối ưu hóa biên lợi nhuận và sức mua dựa trên độ co giãn giá (Price Elasticity) của từng phân khúc khách hàng.</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="showToast('Đã cập nhật biểu giá AI mới nhất cho toàn hệ thống!')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-sm transition flex items-center">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Chạy AI tối ưu giá
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pricing cards grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Card 1 -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-semibold px-2.5 py-1 bg-indigo-50 text-indigo-600 rounded-lg">Đại lý Kim Cương</span>
+                                <span class="text-xs text-emerald-600 font-semibold"><i class="fa-solid fa-arrow-trend-up"></i> +18% sản lượng</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800">Gói Chiết Khấu Quý 3/2026</h3>
+                            <p class="text-xs text-slate-500 mt-1">Áp dụng cho đơn hàng doanh số trên 2 Tỷ/tháng.</p>
+                            
+                            <div class="my-4 p-4 bg-slate-50 rounded-xl space-y-2">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-500">Mức chiết khấu hiện tại:</span>
+                                    <span class="font-semibold text-slate-700">7.0%</span>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-500">Đề xuất tối ưu từ AI:</span>
+                                    <span class="font-bold text-indigo-600 text-sm">8.5%</span>
+                                </div>
+                                <div class="flex justify-between text-xs pt-2 border-t border-slate-200">
+                                    <span class="text-slate-500">Lợi nhuận ròng dự kiến:</span>
+                                    <span class="font-semibold text-emerald-600">+420 Triệu đ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="showToast('Đã áp dụng chính sách chiết khấu Đại lý Kim Cương')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-xl text-xs font-semibold transition">
+                            Áp dụng đề xuất AI
+                        </button>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-semibold px-2.5 py-1 bg-amber-50 text-amber-600 rounded-lg">Đại lý Bán Lẻ</span>
+                                <span class="text-xs text-emerald-600 font-semibold"><i class="fa-solid fa-arrow-trend-up"></i> +25% sản lượng</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800">Chương trình Flash Sale Hè</h3>
+                            <p class="text-xs text-slate-500 mt-1">Kích cầu các mặt hàng phụ kiện tồn kho lâu.</p>
+                            
+                            <div class="my-4 p-4 bg-slate-50 rounded-xl space-y-2">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-500">Mức chiết khấu hiện tại:</span>
+                                    <span class="font-semibold text-slate-700">5.0%</span>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-500">Đề xuất tối ưu từ AI:</span>
+                                    <span class="font-bold text-indigo-600 text-sm">10.0%</span>
+                                </div>
+                                <div class="flex justify-between text-xs pt-2 border-t border-slate-200">
+                                    <span class="text-slate-500">Lợi nhuận ròng dự kiến:</span>
+                                    <span class="font-semibold text-emerald-600">+180 Triệu đ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="showToast('Đã áp dụng chương trình Flash Sale Hè')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-xl text-xs font-semibold transition">
+                            Áp dụng đề xuất AI
+                        </button>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-semibold px-2.5 py-1 bg-violet-50 text-violet-600 rounded-lg">Đại lý Vàng</span>
+                                <span class="text-xs text-emerald-600 font-semibold"><i class="fa-solid fa-arrow-trend-up"></i> +14% sản lượng</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800">Ưu đãi Đơn hàng Lớn</h3>
+                            <p class="text-xs text-slate-500 mt-1">Thưởng nóng cho đơn hàng đặt trước ngày 15.</p>
+                            
+                            <div class="my-4 p-4 bg-slate-50 rounded-xl space-y-2">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-500">Mức chiết khấu hiện tại:</span>
+                                    <span class="font-semibold text-slate-700">6.0%</span>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-500">Đề xuất tối ưu từ AI:</span>
+                                    <span class="font-bold text-indigo-600 text-sm">7.5%</span>
+                                </div>
+                                <div class="flex justify-between text-xs pt-2 border-t border-slate-200">
+                                    <span class="text-slate-500">Lợi nhuận ròng dự kiến:</span>
+                                    <span class="font-semibold text-emerald-600">+290 Triệu đ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="showToast('Đã áp dụng ưu đãi đơn hàng lớn')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-xl text-xs font-semibold transition">
+                            Áp dụng đề xuất AI
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center space-x-3 text-sm">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+        <span id="toast-message">Thành công!</span>
+    </div>
+
+    <div id="modal-add-credit" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-slate-800">Thêm / Đề xuất hạn mức AI mới</h3>
+                <button onclick="hideModal('modal-add-credit')" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Mã Đại Lý hoặc Tên KH</label>
+                    <input type="text" placeholder="VD: Cty TNHH ABC (KH-9921)" class="w-full px-3 py-2 text-sm bg-slate-100 rounded-xl border-none outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Hạn mức hiện tại (VNĐ)</label>
+                    <input type="text" placeholder="1,000,000,000" class="w-full px-3 py-2 text-sm bg-slate-100 rounded-xl border-none outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Yêu cầu AI phân tích lại</label>
+                    <select class="w-full px-3 py-2 text-sm bg-slate-100 rounded-xl border-none outline-none focus:ring-2 focus:ring-indigo-500 text-slate-700">
+                        <option>Dựa trên dòng tiền 6 tháng gần nhất</option>
+                        <option>Dựa trên tốc độ thanh toán thực tế</option>
+                        <option>Dựa trên tiềm năng mở rộng thị phần</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex items-center justify-end space-x-3 pt-2">
+                <button onclick="hideModal('modal-add-credit')" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-xl transition">Hủy</button>
+                <button onclick="hideModal('modal-add-credit'); showToast('AI đã phân tích và tạo hạn mức đề xuất thành công!')" class="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm transition">Xác nhận phân tích</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching logic
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Show selected tab
+            document.getElementById('tab-' + tabId).classList.add('active');
+
+            // Update sidebar buttons styling
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-50', 'text-indigo-600');
+                btn.classList.add('text-slate-600', 'hover:bg-slate-100', 'hover:text-slate-900');
+            });
+
+            const activeBtn = document.getElementById('nav-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-600', 'hover:bg-slate-100', 'hover:text-slate-900');
+                activeBtn.classList.add('bg-indigo-50', 'text-indigo-600');
+            }
+        }
+
+        // Toast notification system
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-message');
+            msgEl.textContent = message;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Modal system
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+            document.getElementById(modalId).classList.add('flex');
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).classList.remove('flex');
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // Initialize Chart.js for dashboard
+        window.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('mainDashboardChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9'],
+                    datasets: [
+                        {
+                            label: 'Hạn mức đề xuất bởi AI (Tỷ VNĐ)',
+                            data: [12.5, 13.8, 15.0, 16.2, 17.5, 18.4],
+                            borderColor: '#6366f1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.05)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Hạn mức thực tế cũ (Tỷ VNĐ)',
+                            data: [12.0, 12.2, 13.0, 13.5, 14.0, 14.2],
+                            borderColor: '#94a3b8',
+                            borderDash: [5, 5],
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { family: 'Inter', size: 11 },
+                                boxWidth: 12
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: '#f1f5f9' },
+                            ticks: { font: { family: 'Inter', size: 10 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Inter', size: 10 } }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
